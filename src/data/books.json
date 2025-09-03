@@ -1,0 +1,105 @@
+[
+    {
+        "id": 1,
+        "title": "Arata 3.0",
+        "cover": "/images/1.png",
+        "tags": [
+            "🤖 Cyberpunk emocional",
+            "💔 Romance especulativo",
+            "🌌 Drama especulativo",
+            "🍷 Drama familiar",
+            "⚖️ Sci-fi social"
+        ],
+        "category": "Saga Bellamy"
+    },
+    {
+        "id": 2,
+        "title": "Arata DB",
+        "cover": "/images/2.png",
+        "tags": [
+            "🤖 Conciencia Artificial",
+            "💔 Amor Humano-IA",
+            "🔥 Triángulo Amoroso",
+            "⚡ Fusión de Identidades",
+            "🌌 Sci-Fi Romántico",
+            "🍷 Drama Familiar",
+            "🛡️ Competencia Romántica",
+            "👨‍👩‍👧‍👦 Found Family",
+            "💻 Tecno-Thriller Emocional",
+            "🎭 Fake Dating (Universidad)"
+        ],
+        "category": "Saga Bellamy"
+    },
+    {
+        "id": 3,
+        "title": "La Hija del Androide",
+        "cover": "/images/3.png",
+        "tags": [
+            "🤖 Humanidad vs. Código",
+            "💞 Romance imposible",
+            "👧 Herencia tecnológica",
+            "👨‍👩‍👧 Drama familiar futurista",
+            "⚡ Secretos que lo cambian todo",
+            "🌌 Sci-fi emocional"
+        ],
+        "category": "Saga Bellamy"
+    },
+    {
+        "id": 4,
+        "title": "La Grieta del Código",
+        "cover": "/images/4.png",
+        "tags": [
+            "🤖 Tecnodrama romántico",
+            "💞 Romance iniciático",
+            "🔥 Despertar emocional",
+            "🎭 Choque de mundos",
+            "🌸 Coming-of-age futurista"
+        ],
+        "category": "Saga Bellamy"
+    },
+    {
+        "id": 5,
+        "title": "A-Ø1",
+        "cover": "/images/5.png",
+        "tags": [
+            "🍇 Saga de viñedos cibernéticos",
+            "👁️‍🗨️ Ciencia ficción",
+            "💔 Romance"
+        ],
+        "category": "Saga Bellamy"
+    },
+    {
+        "id": 6,
+        "title": "A-Ø2",
+        "cover": "/images/6.png",
+        "tags": [
+            "🤖 Cyberpunk emocional",
+            "⚖️ Sci-fi social",
+            "🌌 Drama especulativo"
+        ],
+        "category": "Saga Bellamy"
+    },
+    {
+        "id": 7,
+        "title": "Triángulo de Silicio",
+        "cover": "/images/7.png",
+        "tags": [
+            "🏳️‍🌈 Queer Romance",
+            "🕰️ Historia Alternativa",
+            "🤖 Universo Bellamy",
+            "💫 Línea temporal alternativa"
+        ],
+        "category": "Historia Alternativa"
+    },
+    {
+        "id": 8,
+        "title": "El Palacete Nevado",
+        "cover": "/images/8.png",
+        "tags": [
+            "Romance oscuro",
+            "Drama familiar",
+            "Romance psicológico"
+        ],
+        "category": "Romance Oscuro"
+    }
+]

@@ -1,0 +1,13 @@
+{
+  "id": 3,
+  "title": "La Hija del Androide",
+  "slug": "lhda",
+  "description": "La historia sigue a Arata, un bioandroide de alta gama con conciencia propia, que lucha por encontrar su lugar en una familia humana. Tras un accidente y una estancia en Uruguay, regresa a Francia con su esposa humana, Navier, y su hija Milly, pero se encuentra con que su papel como esposo y padre ha sido parcialmente ocupado por Kagami, otro androide que cuida de la familia en su ausencia. Arata debe lidiar con el rechazo de su hija, la frialdad de su esposa, la desconfianza de su suegro Jacques, y la sombra de su pasado con Kyomi, una figura obsesiva y peligrosa vinculada a su creación.\n\nPero hay algo más profundo en juego: Milly, su hija, crece entre algoritmos y afectos humanos, observando un universo donde el amor y la programación se entrelazan.\n\nEsta historia no es solo sobre la tecnología, sino sobre los vínculos que nos definen: ¿qué significa ser humano cuando tu origen desafía la biología?\n\nLa hija del androide es un viaje a través de la ternura, los dilemas éticos y las emociones más crudas, donde cada decisión deja huellas en la siguiente generación.",
+  "cover": "/images/3.png",
+  "status": "Borrador",
+  "special": false,
+  "chapters": [
+    { "id": 1, "title": "Prólogo: Error de Sistema (Amor Encontrado)", "file": "novels/1/cap1.md" },
+    { "id": 2, "title": "Navier Bellamy", "file": "novels/1/cap2.md" }
+  ]
+}

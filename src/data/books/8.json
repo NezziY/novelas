@@ -1,0 +1,14 @@
+{
+    "id": 8,
+    "title": "El Palacete Nevado",
+    "slug": "epn",
+    "description": "En un palacio aislado por la nieve, Saritia, una joven de origen noble venido a menos, se ve obligada a casarse con Aleko, un duque atormentado por adicciones y un pasado oscuro. Lo que comienza como un matrimonio de conveniencia pronto se convierte en una compleja red de secretos, traiciones y amores prohibidos cuando Saritia se encuentra atrapada entre su deber hacia su esposo y su amor por Olahar, el tío de Aleko. Mientras el palacete se convierte en una jaula dorada, un embarazo de paternidad cuestionable, un mayordomo traicionero y las sombras del pasado amenazan con destruir a toda la familia. Una historia gótica sobre redención, sacrificio y el precio del amor en un mundo de apariencias y honor.",
+    "cover": "/images/8.png",
+    "status": "En progreso",
+    "special": true,
+    "chapters": [
+      { "id": 0, "title": "🧭 PRÓLOGO (POV: Clément)", "file": "novels/7/cap1.md" },
+      { "id": 1, "title": "Capítulo 1", "file": "novels/7/cap2.json" }
+    ]
+  }
+  
