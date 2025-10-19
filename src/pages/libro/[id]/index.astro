@@ -2,9 +2,14 @@
 import "../../../styles/global.css";
 import Header from "../../../components/Header.astro";
 import Footer from "../../../components/Footer.astro";
-import books from "../../../data/books.json";
+// ❌ import books from "../../../data/books.json";
+// ✅ Importamos funciones de MongoDB
+import { getNovels, getNovelDetails } from "../../../lib/mongodb.ts";
 
-export function getStaticPaths() {
+export async function getStaticPaths() {
+  // ✅ Obtenemos libros desde MongoDB
+  const books = await getNovels();
+  
   return books.map((book) => ({
     params: { id: book.id.toString() },
     props: { book },
@@ -13,14 +18,16 @@ export function getStaticPaths() {
 
 const { book } = Astro.props;
 
-// Aquí cargarías el JSON detallado del libro
-// Por ejemplo, si tienes archivos como /data/books/1.json, 2.json, etc.
+// ✅ Obtenemos detalles desde MongoDB en lugar de archivos JSON
 let detailedBook;
 try {
-  detailedBook = await import(`../../../data/books/${book.id}.json`);
-  detailedBook = detailedBook.default;
+  detailedBook = await getNovelDetails(book.id);
+  // Si no hay detalles, usa la info básica
+  if (!detailedBook) {
+    detailedBook = book;
+  }
 } catch (e) {
-  // Si no existe el archivo detallado, usa la info básica
+  // Si hay error, usa la info básica
   detailedBook = book;
 }
 

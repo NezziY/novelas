@@ -2,114 +2,59 @@
 import "../../../../styles/global.css";
 import Header from "../../../../components/Header.astro";
 import Footer from "../../../../components/Footer.astro";
-import books from "../../../../data/books.json";
+import {
+  getNovels,
+  getChapters,
+  getNovelDetails,
+  getChapter,
+} from "../../../../lib/mongodb.ts";
 
-// Interfaces TypeScript
-interface Book {
-  id: number;
-  title: string;
-  cover: string;
-  tags: string[];
-  category: string;
-}
-
-interface Chapter {
-  id: number;
-  title: string;
-  file: string;
-}
-
-interface DetailedBook extends Book {
-  slug?: string;
-  description?: string;
-  status?: string;
-  special?: boolean;
-  totalChapters?: number;
-  chapters?: Chapter[];
-}
-
-interface ChapterContent {
-  title?: string;
-  content?: string[];
-  text?: string;
-}
-
-// Generar rutas para todos los capítulos
+// 🌟 Generar rutas para todos los capítulos
 export async function getStaticPaths() {
-  const paths: any[] = [];
-  for (const book of books) {
-    try {
-      const detailedBookModule = await import(
-        `../../../../data/books/${book.id}.json`
-      );
-      const detailedBook: DetailedBook = detailedBookModule.default;
-      if (detailedBook.chapters) {
-        for (const chapter of detailedBook.chapters) {
-          paths.push({
-            params: { id: book.id.toString(), capitulo: chapter.id.toString() },
-          });
-        }
-      }
-    } catch {
-      console.log(`No detailed info found for book ${book.id}`);
+  const novels = await getNovels();
+  const paths: { params: { id: string; capitulo: string } }[] = [];
+
+  for (const novel of novels) {
+    const chapters = await getChapters(novel.id);
+    for (const ch of chapters) {
+      paths.push({
+        params: { id: novel.id.toString(), capitulo: ch.chapterId.toString() },
+      });
     }
   }
+
   return paths;
 }
 
-// Props de la URL
 const { id, capitulo } = Astro.params;
 
-// Encontrar libro y capítulo
-const book: Book = books.find((b) => b.id.toString() === id)!;
-const detailedBookModule = await import(
-  `../../../../data/books/${book.id}.json`
-);
-const detailedBook: DetailedBook = detailedBookModule.default;
+// 📖 Obtener datos desde MongoDB
+const novel = await getNovelDetails(id);
+const chapter = await getChapter(id, capitulo);
 
-const chapter: Chapter = detailedBook.chapters!.find(
-  (ch) => ch.id.toString() === capitulo
-)!;
-
-// Índices de navegación
-const currentIndex = detailedBook.chapters!.findIndex(
-  (ch) => ch.id === chapter.id
-);
-const prevChapter =
-  currentIndex > 0 ? detailedBook.chapters![currentIndex - 1] : null;
-const nextChapter =
-  currentIndex < detailedBook.chapters!.length - 1
-    ? detailedBook.chapters![currentIndex + 1]
-    : null;
-
-// 🌟 Import dinámico seguro tipado
-const chaptersModules = import.meta.glob("../../../../data/novels/**/*.json", {
-  eager: true,
-}) as Record<string, { default: ChapterContent }>;
-const chapterDataModule =
-  chaptersModules[`../../../../data/novels/${chapter.file}`];
-
-let chapterContent = "";
-if (chapterDataModule) {
-  const chapterData = chapterDataModule.default;
-  if (chapterData.content) {
-    chapterContent += chapterData.content.map((p) => `<p>${p}</p>`).join("");
-  } else if (chapterData.text) {
-    chapterContent += `<p>${chapterData.text}</p>`;
-  } else {
-    chapterContent += `<pre>${JSON.stringify(chapterData, null, 2)}</pre>`;
-  }
-} else {
-  chapterContent = `<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-    <h3 class="text-yellow-800 font-semibold">Capítulo no disponible</h3>
-    <p class="text-yellow-700">No se pudo cargar el contenido desde: <code>${chapter.file}</code></p>
-  </div>`;
+// Manejo de errores si no se encuentra el capítulo
+if (!novel || !chapter) {
+  throw new Error("Novela o capítulo no encontrado.");
 }
+
+// Índices para navegación
+const chapters = await getChapters(id);
+const currentIndex = chapters.findIndex(
+  (c) => c.chapterId.toString() === capitulo
+);
+const prevChapter = currentIndex > 0 ? chapters[currentIndex - 1] : null;
+const nextChapter =
+  currentIndex < chapters.length - 1 ? chapters[currentIndex + 1] : null;
+
+// Preparar contenido HTML
+const chapterContent = chapter.content
+  ? chapter.content.map((p: string) => `<p>${p}</p>`).join("")
+  : `<p>Contenido no disponible</p>`;
 
 // Color según categoría
 let accentColor = "purple";
-if (book.category === "Romance Oscuro") accentColor = "red";
-else if (book.category === "Historia Alternativa") accentColor = "emerald";
+if (novel.category === "Romance Oscuro") accentColor = "red";
+else if (novel.category === "Historia Alternativa") accentColor = "emerald";
 ---
 
 <!doctype html>
@@ -117,29 +62,28 @@ else if (book.category === "Historia Alternativa") accentColor = "emerald";
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{chapter.title} - {book.title} - Vane Sánchez</title>
+    <title>{chapter.title} - {novel.title} - Vane Sánchez</title>
     <meta
       name="description"
-      content={`Lee ${chapter.title} de ${book.title} por Vane Sánchez`}
+      content={`Lee ${chapter.title} de ${novel.title} por Vane Sánchez`}
     />
   </head>
   <body
     class="font-serif bg-gradient-to-br from-slate-50 to-blue-100 min-h-screen text-gray-800"
   >
     <Header />
-
     <main class="mt-24 min-h-screen">
       <div class="max-w-4xl mx-auto px-4 py-8">
         <!-- Navegación superior -->
         <div class="flex justify-between items-center mb-8">
           <a
-            href={`/libro/${book.id}`}
+            href={`/libro/${novel.id}`}
             class={`text-${accentColor}-600 hover:text-${accentColor}-800 font-semibold transition-colors`}
           >
             ← Volver al libro
           </a>
           <h1 class="text-xl font-bold text-gray-800 text-center">
-            {book.title}
+            {novel.title}
           </h1>
           <div class="w-32"></div>
         </div>
@@ -153,79 +97,85 @@ else if (book.category === "Historia Alternativa") accentColor = "emerald";
               {chapter.title}
             </h1>
             <p class="text-gray-600">
-              Capítulo {currentIndex + 1} de {detailedBook.chapters!.length}
+              Capítulo {currentIndex + 1} de {chapters.length}
             </p>
           </header>
-
           <div
             class="prose prose-lg max-w-none text-gray-700 leading-relaxed"
             set:html={chapterContent}
           />
         </article>
 
-        <div class="flex items-center justify-between bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg mb-8">
-  
-          <!-- Espacio para "Anterior" -->
+        <!-- Navegación inferior -->
+        <div
+          class="flex items-center justify-between bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-lg mb-8"
+        >
           <div class="w-24">
-            {prevChapter ? (
-              <a
-                href={`/libro/${book.id}/capitulo/${prevChapter.id}`}
-                class={`flex items-center text-${accentColor}-600 hover:text-${accentColor}-800 font-semibold transition-colors group`}
-              >
-                <span class="group-hover:-translate-x-1 transition-transform">←</span>
-                <span class="ml-2">Anterior</span>
-              </a>
-            ) : (
-              <span class="invisible">Placeholder</span>
-            )}
+            {
+              prevChapter ? (
+                <a
+                  href={`/libro/${novel.id}/capitulo/${prevChapter.chapterId}`}
+                  class={`flex items-center text-${accentColor}-600 hover:text-${accentColor}-800 font-semibold transition-colors group`}
+                >
+                  <span class="group-hover:-translate-x-1 transition-transform">
+                    ←
+                  </span>
+                  <span class="ml-2">Anterior</span>
+                </a>
+              ) : (
+                <span class="invisible">Placeholder</span>
+              )
+            }
           </div>
-        
-          <!-- Select -->
+
           <div class="flex-1 mx-4">
-            <label for="chapterSelect" class="block mb-2 font-semibold text-gray-800 text-center">
-              📚 Selecciona un capítulo:
-            </label>
+            <label
+              for="chapterSelect"
+              class="block mb-2 font-semibold text-gray-800 text-center"
+              >📚 Selecciona un capítulo:</label
+            >
             <select
               id="chapterSelect"
-              class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5"
+              class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5"
               onchange="window.location.href=this.value"
             >
-              {detailedBook.chapters!.map((ch) => (
-                <option
-                  value={`/libro/${book.id}/capitulo/${ch.id}`}
-                  selected={ch.id === chapter.id}
-                >
-                  {ch.id - 1}. {ch.title}
-                </option>
-              ))}
+              {
+                chapters.map((ch) => (
+                  <option
+                    value={`/libro/${novel.id}/capitulo/${ch.chapterId}`}
+                    selected={ch.chapterId.toString() === capitulo}
+                  >
+                    {ch.chapterId - 1}. {ch.title}
+                  </option>
+                ))
+              }
             </select>
           </div>
-        
-          <!-- Espacio para "Siguiente" -->
+
           <div class="w-24 text-right">
-            {nextChapter ? (
-              <a
-                href={`/libro/${book.id}/capitulo/${nextChapter.id}`}
-                class={`flex items-center justify-end text-${accentColor}-600 hover:text-${accentColor}-800 font-semibold transition-colors group`}
-              >
-                <span class="mr-2">Siguiente</span>
-                <span class="group-hover:translate-x-1 transition-transform">→</span>
-              </a>
-            ) : (
-              <span class="invisible">Placeholder</span>
-            )}
+            {
+              nextChapter ? (
+                <a
+                  href={`/libro/${novel.id}/capitulo/${nextChapter.chapterId}`}
+                  class={`flex items-center justify-end text-${accentColor}-600 hover:text-${accentColor}-800 font-semibold transition-colors group`}
+                >
+                  <span class="mr-2">Siguiente</span>
+                  <span class="group-hover:translate-x-1 transition-transform">
+                    →
+                  </span>
+                </a>
+              ) : (
+                <span class="invisible">Placeholder</span>
+              )
+            }
           </div>
-        
-          <!-- Contador -->
+
           <div class="absolute right-4 bottom-2 text-gray-500 text-sm">
-            {currentIndex + 1} / {detailedBook.chapters!.length}
+            {currentIndex + 1} / {chapters.length}
           </div>
-        
         </div>
-        
       </div>
     </main>
-
     <Footer />
   </body>
 </html>
